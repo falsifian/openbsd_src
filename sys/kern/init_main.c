@@ -221,6 +221,7 @@ main(void *framep)
 	consinit();
 
 	printf("%s\n", copyright);
+	printf("YYY new debug messages are indeed printing\n");
 
 #ifdef KUBSAN
 	/* Initialize kubsan. */
@@ -492,6 +493,7 @@ main(void *framep)
 
 	if (mountroot == NULL || ((*mountroot)() != 0))
 		panic("cannot mount root");
+	printf("YYY mountroot done.\n");
 
 	TAILQ_FIRST(&mountlist)->mnt_flag |= MNT_ROOTFS;
 
@@ -566,8 +568,10 @@ main(void *framep)
 	/*
 	 * Okay, now we can let init(8) exec!  It's off to userland!
 	 */
+	printf("YYY waking up init\n");
 	start_init_exec = 1;
 	wakeup((void *)&start_init_exec);
+	printf("YYY woke up init\n");
 
 	/*
 	 * Start the idle pool page garbage collector
@@ -640,8 +644,10 @@ start_init(void *arg)
 	/*
 	 * Wait for main() to tell us that it's safe to exec.
 	 */
+	printf("YYY start_init: waiting...\n");
 	while (start_init_exec == 0)
 		tsleep_nsec(&start_init_exec, PWAIT, "initexec", INFSLP);
+	printf("YYY start_init: done waiting\n");
 
 	check_console(p);
 
@@ -747,6 +753,7 @@ start_init(void *arg)
 		 * Now try to exec the program.  If can't for any reason
 		 * other than it doesn't exist, complain.
 		 */
+		printf("YYY start_init: okay, here we go: calling sys_execve...\n");
 		if ((error = sys_execve(p, &args, retval)) == 0) {
 			KERNEL_UNLOCK();
 			return;
