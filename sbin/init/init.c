@@ -517,6 +517,7 @@ f_single_user(void)
 	char *clear;
 	char pbuf[1024];
 #endif
+	DEBUG_LOG("ZZZ in f_single_user\n");
 
 	/* Init shell and name */
 	strlcpy(shell, _PATH_BSHELL, sizeof shell);
@@ -528,11 +529,14 @@ f_single_user(void)
 	if (getsecuritylevel() > 0)
 		setsecuritylevel(0);
 
+	DEBUG_LOG("ZZZ forking...\n");
 	if ((pid = fork()) == 0) {
+		DEBUG_LOG("ZZZ child: start\n");
 		/*
 		 * Start the single user session.
 		 */
 		setctty(_PATH_CONSOLE);
+		DEBUG_LOG("ZZZ child: called setctty\n");
 
 #ifdef SECURE
 		/*
@@ -611,6 +615,7 @@ f_single_user(void)
 		argv[0] = name;
 		argv[1] = NULL;
 		setenv("PATH", _PATH_STDPATH, 1);
+		DEBUG_LOG("ZZZ child: execing shell: %s\n", shell);
 		execv(shell, argv);
 		emergency("can't exec %s for single user: %m", shell);
 
@@ -621,6 +626,7 @@ f_single_user(void)
 		sleep(STALL_TIMEOUT);
 		_exit(1);
 	}
+	DEBUG_LOG("ZZZ parent: continue\n");
 
 	if (pid == -1) {
 		/*

@@ -143,6 +143,7 @@ main(int argc, char *argv[])
 	char **wp;
 	struct env env;
 	pid_t ppid;
+	printf("XXX ksh start\n");
 
 	kshname = argv[0];
 
