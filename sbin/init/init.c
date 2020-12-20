@@ -484,17 +484,22 @@ void
 setctty(char *name)
 {
 	int fd;
+	DEBUG_LOG("ZZZ setctty: start; name is %s\n", name);
 
 	(void) revoke(name);
+	DEBUG_LOG("ZZZ setctty: done calling revoke\n");
 	sleep(2);			/* leave DTR low */
+	DEBUG_LOG("ZZZ setctty: done calling sleep\n");
 	if ((fd = open(name, O_RDWR)) == -1) {
 		stall("can't open %s: %m", name);
 		_exit(1);
 	}
+	DEBUG_LOG("ZZZ setctty: successfully opened\n");
 	if (login_tty(fd) == -1) {
 		stall("can't get %s for controlling terminal: %m", name);
 		_exit(1);
 	}
+	DEBUG_LOG("ZZZ setctty: done\n");
 }
 
 /*
