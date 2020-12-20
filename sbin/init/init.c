@@ -92,6 +92,8 @@ void warning(char *, ...);
 void emergency(char *, ...);
 void disaster(int);
 
+#define DEBUG_LOG warning
+
 typedef enum {
 	invalid_state,
 	single_user,
@@ -194,6 +196,8 @@ main(int argc, char *argv[])
 	struct sigaction sa;
 	sigset_t mask;
 
+	DEBUG_LOG("ZZZ in init 0\n");
+
 	/* Dispose of random users. */
 	if (getuid() != 0)
 		errc(1, EPERM, NULL);
@@ -205,6 +209,7 @@ main(int argc, char *argv[])
 	/*
 	 * Paranoia.
 	 */
+	/*
 	if ((fd = open(_PATH_DEVNULL, O_RDWR, 0)) != -1) {
 		(void)dup2(fd, STDIN_FILENO);
 		(void)dup2(fd, STDOUT_FILENO);
@@ -212,6 +217,8 @@ main(int argc, char *argv[])
 		if (fd > 2)
 			(void)close(fd);
 	}
+	*/
+	DEBUG_LOG("ZZZ in init 1\n");
 
 	/*
 	 * Note that this does NOT open a file...
@@ -224,6 +231,8 @@ main(int argc, char *argv[])
 	 */
 	if (setsid() == -1)
 		warning("initial setsid() failed: %m");
+
+	DEBUG_LOG("ZZZ in init 2\n");
 
 	/*
 	 * Establish an initial user so that programs running
@@ -249,6 +258,8 @@ main(int argc, char *argv[])
 			break;
 		}
 
+	DEBUG_LOG("ZZZ in init 3\n");
+
 	if (optind != argc)
 		warning("ignoring excess arguments");
 
@@ -272,6 +283,8 @@ main(int argc, char *argv[])
 	sa.sa_handler = SIG_IGN;
 	(void) sigaction(SIGTTIN, &sa, NULL);
 	(void) sigaction(SIGTTOU, &sa, NULL);
+
+	DEBUG_LOG("ZZZ in init 4\n");
 
 	/*
 	 * Start the state machine.
@@ -443,8 +456,11 @@ setsecuritylevel(int newlevel)
 void
 transition(state_t s)
 {
-	for (;;)
+	DEBUG_LOG("ZZZ transition(%d)\n", s);
+	for (;;) {
+		DEBUG_LOG("ZZZ in transition loop; s is %d\n", s);
 		s = (*state_funcs[s])();
+	}
 }
 
 /*
